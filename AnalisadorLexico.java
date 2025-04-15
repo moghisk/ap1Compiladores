@@ -20,7 +20,7 @@ public class AnalisadorLexico {
 			int x = p - 1;
 			String palavra = "";
 
-			for (int i = 0; i < x; i++) { // monta palavras
+			for (int i = 0; i <= x; i++) { // monta palavras
 				car = lista.get(n).substring(lista.get(n).length() - p, lista.get(n).length() - p + 1);
 				palavra += car;
 
@@ -53,6 +53,12 @@ public class AnalisadorLexico {
 				boolean maisc = palavra.equals(palavra.toUpperCase()); // palavra toda em maiúscula
 				if (maisc) { // se todas as letras forem maiúsculas
 					switch (palavra) {
+					
+					case "#": // ignora comentário
+						i = x;
+						palavra = "";
+						break;
+					
 						case " ":
 							palavra = "";
 							break; // palavra vazia
@@ -112,129 +118,137 @@ public class AnalisadorLexico {
 							palavra = "";
 							break;
 
-						case "ENQTO":
-							tokens.add(new Token(palavra, TipoToken.PCEnqto));
-							palavra = "";
-							break;
-
-						case "*":
-							tokens.add(new Token(palavra, TipoToken.OpAritMult));
-							palavra = "";
-							break;
-
-						case "/":
-							tokens.add(new Token(palavra, TipoToken.OpAritDiv));
-							palavra = "";
-							break;
-
-						case "+":
-							tokens.add(new Token(palavra, TipoToken.OpAritSoma));
-							palavra = "";
-							break;
-
-						case "-":
-							tokens.add(new Token(palavra, TipoToken.OpAritSub));
-							palavra = "";
-							break;
-
 						case "E":
-							tokens.add(new Token(palavra, TipoToken.OpBoolE));
-							palavra = "";
-							break;
+							if (lista.get(n).substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2).equals("NQTO")) {
+								palavra += "NQTO";
+								p--;
+								i++;
+								tokens.add(new Token(palavra, TipoToken.PCEnqto));
+								palavra = "";
+								break;
+							} else {
+								tokens.add(new Token(palavra, TipoToken.OpBoolE));
+								palavra = "";
+								break;
+							}//para nao confundir o E com ENQTO
 
 						case "OU":
 							tokens.add(new Token(palavra, TipoToken.OpBoolOu));
 							palavra = "";
 							break;
-
-						case ":":
-							tokens.add(new Token(palavra, TipoToken.Delim));
-							palavra = "";
-							break;
-
-						case "(":
-							tokens.add(new Token(palavra, TipoToken.AbrePar));
-							palavra = "";
-							break;
-
-						case ")":
-							tokens.add(new Token(palavra, TipoToken.FechaPar));
-							palavra = "";
-							break;
-
-						case "!":
-							if (lista.get(n).substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2).equals("=")) {
-								// se o próximo caractere for "="
-								palavra += "=";
-								p--;
-								i++;
-								tokens.add(new Token(palavra, TipoToken.OpRelDif));
-								palavra = "";
-								break;
-							}
-							break;
-
-						case "<":
-							if (lista.get(n).substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2).equals("=")) {
-								palavra += "=";
-								p--;
-								i++;
-								tokens.add(new Token(palavra, TipoToken.OpRelMenorIgual));
-								palavra = "";
-								break;
-							} else {
-								tokens.add(new Token(palavra, TipoToken.OpRelMenor));
-								palavra = "";
-								break;
-							}
-
-						case ">":
-							if (lista.get(n).substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2).equals("=")) {
-								palavra += "=";
-								p--;
-								i++;
-								tokens.add(new Token(palavra, TipoToken.OpRelMaiorIgual));
-								palavra = "";
-								break;
-							} else {
-								tokens.add(new Token(palavra, TipoToken.OpRelMaior));
-								palavra = "";
-								break;
-							}
-
-						case "=":
-							if (lista.get(n).substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2).equals("=")) {
-								palavra += "=";
-								p--;
-								i++;
-								tokens.add(new Token(palavra, TipoToken.OpRelIgual));
-								palavra = "";
-								break;
-							}
-							break;
-
-						case "#": // ignora comentário
-							i = x;
-							palavra = "";
-							break;
-
-						default:
-							if (palavra.equals(aspas)) { // palavra entre aspas
-								while (!lista.get(n)
-										.substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2)
-										.equals(aspas)) {
-									palavra += lista.get(n).substring(lista.get(n).length() - p + 1,
-											lista.get(n).length() - p + 2);
-									p--;
-									i++;
-								}
-								tokens.add(new Token(palavra, TipoToken.Cadeia));
-								palavra = "";
-								break;
-							}
-							break;
+						
 					}
-				} else { // começa com letra minúscula ou não é palavra reservada → variável
+					
+				} else { //simbolos que nao sao letra
+					switch(palavra) {
+					
+					case "*":
+						tokens.add(new Token(palavra, TipoToken.OpAritMult));
+						palavra = "";
+						break;
+
+					case "/":
+						tokens.add(new Token(palavra, TipoToken.OpAritDiv));
+						palavra = "";
+						break;
+
+					case "+":
+						tokens.add(new Token(palavra, TipoToken.OpAritSoma));
+						palavra = "";
+						break;
+
+					case "-":
+						tokens.add(new Token(palavra, TipoToken.OpAritSub));
+						palavra = "";
+						break;
+
+					
+					case ":":
+						tokens.add(new Token(palavra, TipoToken.Delim));
+						palavra = "";
+						break;
+
+					case "(":
+						tokens.add(new Token(palavra, TipoToken.AbrePar));
+						palavra = "";
+						break;
+
+					case ")":
+						tokens.add(new Token(palavra, TipoToken.FechaPar));
+						palavra = "";
+						break;
+
+					case "!":
+						if (lista.get(n).substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2).equals("=")) {
+							// se o próximo caractere for "="
+							palavra += "=";
+							p--;
+							i++;
+							tokens.add(new Token(palavra, TipoToken.OpRelDif));
+							palavra = "";
+							break;
+						}
+						break;
+
+					case "<":
+						if (lista.get(n).substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2).equals("=")) {
+							palavra += "=";
+							p--;
+							i++;
+							tokens.add(new Token(palavra, TipoToken.OpRelMenorIgual));
+							palavra = "";
+							break;
+						} else {
+							tokens.add(new Token(palavra, TipoToken.OpRelMenor));
+							palavra = "";
+							break;
+						}
+
+					case ">":
+						if (lista.get(n).substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2).equals("=")) {
+							palavra += "=";
+							p--;
+							i++;
+							tokens.add(new Token(palavra, TipoToken.OpRelMaiorIgual));
+							palavra = "";
+							break;
+						} else {
+							tokens.add(new Token(palavra, TipoToken.OpRelMaior));
+							palavra = "";
+							break;
+						}
+
+					case "=":
+						if (lista.get(n).substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2).equals("=")) {
+							palavra += "=";
+							p--;
+							i++;
+							tokens.add(new Token(palavra, TipoToken.OpRelIgual));
+							palavra = "";
+							break;
+						}
+						break;
+
+					
+						
+					default:
+						if (palavra.equals(aspas)) { // palavra entre aspas
+							while (!lista.get(n)
+									.substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2)
+									.equals(aspas)) {
+								palavra += lista.get(n).substring(lista.get(n).length() - p + 1,
+										lista.get(n).length() - p + 2);
+								p--;
+								i++;
+							}
+							tokens.add(new Token(palavra, TipoToken.Cadeia));
+							palavra = "";
+							break;
+						}
+						break;
+					}
+				
+					// começa com letra minúscula ou não é palavra reservada → variável
 					while (p > 1 && lista.get(n)
 							.substring(lista.get(n).length() - p + 1, lista.get(n).length() - p + 2)
 							.matches("[a-zA-Z0-9_]")) {
